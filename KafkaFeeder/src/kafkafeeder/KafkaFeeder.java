@@ -5,9 +5,6 @@
  */
 package kafkafeeder;
 import org.apache.logging.log4j.*;
-import java.util.ArrayList;
-import java.util.List;
-import javax.json.*;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.*;
 /**
@@ -38,25 +35,24 @@ public class KafkaFeeder {
         LOG.info("Setting Kafka topic to "+kafkaTopic);
         props.put("bootstrap.servers", "192.168.1.92:9092");
         props.put("acks", "all");
-        props.put("retries", 0);
-        props.put("batch.size", 16384);
-        props.put("linger.ms", 1);
-        props.put("buffer.memory", 33554432);
+        props.put("retries", 3);
+        props.put("linger.ms", 1000);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         
         LOG.info("Connecting to "+kafkaTopic);
-        Producer<String, String> kafka = new KafkaProducer<>(props);
+        Producer<String, String> kafka = new KafkaProducer<String,String>(props);
         LOG.info("Connection successful");
         
         LOG.info("Building file list...");
-        MP3List mp3s = new MP3List("D:\\Music");
+        MP3List mp3s = new MP3List("D:\\Music\\30 Seconds to Mars");
         
-        LOG.info("Sending files...");
+        LOG.info("Sending "+mp3s.getMP3List().size()+" files...");
         while (i < mp3s.getMP3List().size()) {
 
           String payload = mp3s.getMP3List().get(i).toString();
           i++;
+          LOG.info(payload);
           kafka.send(new ProducerRecord<String, String>(kafkaTopic, Integer.toString(i), payload ));
         }
         
