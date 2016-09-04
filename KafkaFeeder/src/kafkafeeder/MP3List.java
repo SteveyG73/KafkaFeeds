@@ -5,7 +5,7 @@
  */
 package kafkafeeder;
 
-//import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +21,7 @@ import javax.json.*;
 public class MP3List {
 
     
-    //private static final Logger LOG = LogManager.getLogger("kafkafeeder");
+    private static final Logger LOGKF = LogManager.getLogger("kafkafeeder");
     private List<JsonObject> mp3Json;
     /**
      * @param fpath
@@ -34,7 +34,7 @@ public class MP3List {
             paths.forEach((f) -> {
                String fname = f.toString();
                if (fname.endsWith("mp3") ) {
-                  //LOG.debug("Adding "+fname);
+                  LOGKF.debug("Adding "+fname);
                   try {
                        Mp3File mp3 = new Mp3File(fname);
                        if (mp3.hasId3v2Tag()) {
@@ -49,17 +49,17 @@ public class MP3List {
                                 .add("year", tags.getYear())
                                 .build();
                            mp3Json.add(json);
-                           //LOG.debug(json.toString());
+                           LOGKF.debug(json.toString());
                        }
                   }
                   catch (Exception e) {
-                      //LOG.debug(e.getMessage());
+                      LOGKF.error(e);
                   }
                }
             });
         }
         catch (Exception e) {
-            e.printStackTrace();
+            LOGKF.error(e);
         }
     }
     

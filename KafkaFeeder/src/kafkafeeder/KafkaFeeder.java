@@ -17,7 +17,7 @@ public class KafkaFeeder {
      * @param args the command line arguments
      */
     
-    private static final Logger LOG = LogManager.getLogger("kafkafeeder");
+    private static final Logger LOGKF = LogManager.getLogger("kafkafeeder");
     
     public static void main(String[] args) {
         // TODO code application logic here
@@ -28,11 +28,11 @@ public class KafkaFeeder {
                
         if (args.length!=1) {
             System.out.println("Incorrect number of parameters supplied...");
-            LOG.error("Incorrect number of parameters supplied...");
+            LOGKF.error("Incorrect number of parameters supplied...");
             System.exit(1);
         }
         kafkaTopic = args[0];        
-        LOG.info("Setting Kafka topic to "+kafkaTopic);
+        LOGKF.info("Setting Kafka topic to "+kafkaTopic);
         props.put("bootstrap.servers", "192.168.1.92:9092");
         props.put("acks", "all");
         props.put("retries", 3);
@@ -40,25 +40,25 @@ public class KafkaFeeder {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         
-        LOG.info("Connecting to "+kafkaTopic);
+        LOGKF.info("Creating client for topic "+kafkaTopic);
         Producer<String, String> kafka = new KafkaProducer<String,String>(props);
-        LOG.info("Connection successful");
+        LOGKF.info("Client creation successful");
         
-        LOG.info("Building file list...");
+        LOGKF.info("Building file list...");
         MP3List mp3s = new MP3List("D:\\Music\\30 Seconds to Mars");
         
-        LOG.info("Sending "+mp3s.getMP3List().size()+" files...");
+        LOGKF.info("Sending "+mp3s.getMP3List().size()+" files...");
         while (i < mp3s.getMP3List().size()) {
 
           String payload = mp3s.getMP3List().get(i).toString();
           i++;
-          LOG.info(payload);
+          LOGKF.info(payload);
           kafka.send(new ProducerRecord<String, String>(kafkaTopic, Integer.toString(i), payload ));
         }
         
-        LOG.info("Closing Connectiion to "+kafkaTopic);        
+        LOGKF.info("Closing Connectiion to "+kafkaTopic);        
         kafka.close();
-        LOG.info("Connection successfully dropped");
+        LOGKF.info("Connection successfully dropped");
         
     }
     
